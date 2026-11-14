@@ -1,7 +1,7 @@
 # ACCP Construction — Proposal 02
 
-**Engineered to Endure** is a responsive brand and website concept for ACCP Construction. The industrial direction uses near-black carbon, titanium, violet and a limited amber accent.
+A static brand and website presentation inspired by [Dala's Refero style reference](https://styles.refero.design/style/e5f5f8cf-e68d-4ed1-bbf5-6b67569af648). The hero is a procedural Canvas 2D pavilion and elevation drawing. The site defaults to dark and includes a persistent light theme and motion controls.
 
-Open index.html, or serve this directory with a static web server. GitHub Pages can publish the root of the main branch. All imagery, fonts, and other runtime assets are included locally.
+GitHub Pages serves the root of `main`. To preview locally from the repository root, run `python3 -m http.server 8769` and visit `http://localhost:8769/`. Runtime assets are served from this repository. No build step or backend is required.
 
-The pavilion, project photographs and brand applications are illustrative. The quote form is a prototype and does not transmit data.
+Project images and mockups were generated for this proposal and are illustrative. The original ACCP logo is retained; selected finishes are rendered using its mask. Inter is distributed under the SIL Open Font License. The quote form validates entries on the page and does not transmit them.

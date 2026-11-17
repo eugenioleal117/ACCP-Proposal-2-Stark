@@ -28,14 +28,34 @@ function showNavigation(open) {
   menuButton.setAttribute("aria-expanded", String(open));
   menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
 }
-menuButton.addEventListener("click", () => showNavigation(!navigation.classList.contains("open")));
+const isMobileMenu = matchMedia("(max-width: 700px)");
+function menuContains(target) {
+  return menuButton.contains(target) || navigation.contains(target);
+}
+function closeMenuFromOutside(event) {
+  if (navigation.classList.contains("open") && !menuContains(event.target)) showNavigation(false);
+}
+menuButton.addEventListener("click", () => {
+  const open = menuButton.getAttribute("aria-expanded") !== "true";
+  showNavigation(open);
+  if (open) navigation.querySelector("a").focus({ preventScroll: true });
+});
+document.addEventListener("focusin", closeMenuFromOutside);
+document.addEventListener("pointerdown", closeMenuFromOutside);
+const closeOnDesktop = (event) => { if (!event.matches) showNavigation(false); };
+if (isMobileMenu.addEventListener) isMobileMenu.addEventListener("change", closeOnDesktop);
+else if (isMobileMenu.addListener) isMobileMenu.addListener(closeOnDesktop);
 navigation.addEventListener("click", (event) => {
-  if (event.target.closest("a")) showNavigation(false);
+  const link = event.target.closest("a");
+  if (!link || !navigation.classList.contains("open")) return;
+  showNavigation(false);
+  document.getElementById(link.hash.slice(1))?.focus({ preventScroll: true });
 });
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && navigation.classList.contains("open")) {
+    const restoreFocus = isMobileMenu.matches && menuContains(document.activeElement);
     showNavigation(false);
-    menuButton.focus();
+    if (restoreFocus) menuButton.focus();
   }
 });
 
@@ -67,19 +87,16 @@ galleryButtons.forEach((button) => button.addEventListener("click", () => {
   });
 }));
 
-const form = document.querySelector("form");
+const form = document.querySelector("#quote-form");
 const formStatus = document.querySelector("#form-status");
 function previewRequest(event) {
   event.preventDefault();
-  formStatus.textContent = "";
-  if (form.reportValidity()) {
-    const projectType = form.querySelector("select").value;
-    formStatus.textContent = `Preview ready for your ${projectType.toLowerCase()} project. No information was sent.`;
-  }
+  const projectType = form.querySelector("select").value;
+  formStatus.textContent = `Demo complete for your ${projectType.toLowerCase()} project. No information was sent.`;
 }
 form.addEventListener("submit", previewRequest);
 form.addEventListener("input", () => { formStatus.textContent = ""; });
-document.querySelector("#preview-request").addEventListener("click", previewRequest);
+document.querySelector("#preview-request").disabled = false;
 
 if ("IntersectionObserver" in window && !reducedMotion.matches) {
   const revealObserver = new IntersectionObserver((entries) => {
@@ -97,11 +114,8 @@ const motionButton = document.querySelector("#motion");
 const viewButton = document.querySelector("#change-view");
 const context = canvas.getContext("2d");
 
-if (context) {
+if (context && typeof Path2D === "function") {
   startConstellation();
-} else {
-  motionButton.hidden = true;
-  viewButton.hidden = true;
 }
 
 function startConstellation() {
@@ -257,7 +271,6 @@ function startConstellation() {
 
   function syncMotion() {
     motionButton.textContent = paused ? "Play motion" : "Pause motion";
-    motionButton.setAttribute("aria-pressed", String(paused));
     if (paused || !visible || document.hidden) {
       cancelAnimationFrame(frame);
       frame = 0;
@@ -268,7 +281,7 @@ function startConstellation() {
     }
   }
 
-  new ResizeObserver(() => {
+  function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -277,13 +290,21 @@ function startConstellation() {
     canvas.width = Math.round(width * pixelRatio);
     canvas.height = Math.round(height * pixelRatio);
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    paint(true);
-  }).observe(canvas);
+    paint(paused);
+  }
+  resizeCanvas();
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(resizeCanvas).observe(canvas);
+  } else {
+    window.addEventListener("resize", resizeCanvas);
+  }
 
-  new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    syncMotion();
-  }).observe(canvas);
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      syncMotion();
+    }).observe(canvas);
+  }
   document.addEventListener("visibilitychange", syncMotion);
   reducedMotion.addEventListener("change", () => {
     paused = reducedMotion.matches;
@@ -305,13 +326,17 @@ function startConstellation() {
   viewButton.addEventListener("click", () => {
     elevation = !elevation;
     viewButton.textContent = elevation ? "Perspective view" : "Elevation view";
-    viewButton.setAttribute("aria-pressed", String(elevation));
     document.querySelector("#view-label").textContent = elevation ? "Front elevation" : "Pavilion in perspective";
+    canvas.setAttribute("aria-label", elevation
+      ? "Colored triangular particles trace the front elevation of the pavilion."
+      : "Colored triangular particles form a three-dimensional pavilion with a cantilevered roof.");
     if (paused) {
       elevationBlend = elevation ? 1 : 0;
       paint(true);
     }
   });
   themeButton.addEventListener("click", () => { if (paused) paint(true); });
+  viewButton.hidden = false;
+  motionButton.hidden = false;
   syncMotion();
 }

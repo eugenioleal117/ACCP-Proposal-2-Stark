@@ -9,8 +9,14 @@
   <title>ACCP Construction — Built from the unseen</title>
   <link rel="icon" href="logo-mask.png">
   <link rel="preload" href="inter.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=iconography-20261117">
-  <script defer src="app.js?v=constellation-2"></script>
+  <script>
+  try {
+    const savedTheme = localStorage.getItem("accp-proposal-02-theme");
+    if (savedTheme === "light") document.documentElement.dataset.theme = savedTheme;
+  } catch {}
+</script>
+  <link rel="stylesheet" href="styles.css?v=qa-20261117">
+  <script defer src="app.js?v=qa-20261117"></script>
 </head>
 <body>
   <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -33,7 +39,7 @@
 </svg>
 
   <a class="skip" href="#main">Skip to content</a>
-  <header class="wrap masthead" id="top">
+  <header class="wrap masthead" id="top" tabindex="-1">
     <a href="#top" class="brand" aria-label="ACCP Construction home">
       <span class="mark" aria-hidden="true"></span><span>ACCP <small>Construction</small></span>
     </a>
@@ -44,7 +50,7 @@
     <button class="quiet theme-button" type="button" aria-label="Switch to light mode"><svg class="icon"><use href="#sun"/></svg></button>
   </header>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <section class="wrap hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="label">ACCP Construction · Brand Proposal 02</p>
@@ -55,13 +61,13 @@
       <figure class="hero-art">
         <canvas id="constellation" role="img" aria-label="Colored triangular particles form a three-dimensional pavilion with a cantilevered roof."></canvas>
         <figcaption>
-          <span><i class="signal"></i> <span id="view-label">Pavilion in perspective</span></span>
-          <span class="art-controls"><button class="text-button" id="change-view" type="button" aria-pressed="false">Elevation view</button><button class="text-button" id="motion" type="button" aria-pressed="false">Pause motion</button></span>
+          <span><i class="signal"></i> <span id="view-label" role="status">Pavilion in perspective</span></span>
+          <span class="art-controls"><button class="text-button" id="change-view" type="button" aria-controls="constellation" hidden>Elevation view</button><button class="text-button" id="motion" type="button" aria-controls="constellation" hidden>Pause motion</button></span>
         </figcaption>
       </figure>
     </section>
 
-    <section class="wrap work" id="work" aria-labelledby="work-title">
+    <section class="wrap work" id="work" tabindex="-1" aria-labelledby="work-title">
       <div class="section-intro rise">
         <h2 id="work-title">Space takes shape.</h2>
         <div><p class="label">Architecture</p><p class="lead">Two illustrative studies show how the identity could frame residential and commercial work.</p></div>
@@ -76,14 +82,14 @@
       </article>
     </section>
 
-    <section class="wrap identity" id="identity" aria-labelledby="identity-title">
+    <section class="wrap identity" id="identity" tabindex="-1" aria-labelledby="identity-title">
       <div class="section-intro rise">
         <h2 id="identity-title">The ACCP mark.</h2>
         <div><p class="label">Visual identity</p><p class="lead">The existing skyline and wordmark were retained. Three finishes define how the mark reads on screens, metal and dark materials.</p></div>
       </div>
       <div class="identity-lab rise">
         <div class="mark-stage" id="finish-image" data-finish="spectrum" role="img" aria-label="Original ACCP skyline shape in a violet, silver and teal gradient">
-          <span class="mark" aria-hidden="true"></span><img src="accp-original.jpg" alt="" loading="lazy" width="200" height="200">
+          <span class="mark" aria-hidden="true"></span><img src="accp-original.jpg" alt="" width="200" height="200">
         </div>
         <div class="finish-copy">
           <p class="label">Logo finishes</p>
@@ -137,7 +143,7 @@
       </div>
     </section>
 
-    <section class="wrap applications" id="applications" aria-labelledby="field-title">
+    <section class="wrap applications" id="applications" tabindex="-1" aria-labelledby="field-title">
       <div class="section-intro rise">
         <h2 id="field-title">Out in the field.</h2>
         <div><p class="label">Brand applications</p><p class="lead">Brushed metal, matte fabric and painted steel. Each surface calls for a different application of the same mark.</p></div>
@@ -163,23 +169,24 @@
       </div>
     </section>
 
-    <section class="wrap quote rise" id="quote" aria-labelledby="quote-title">
+    <section class="wrap quote rise" id="quote" tabindex="-1" aria-labelledby="quote-title">
       <div><p class="label">Quote experience</p><h2 id="quote-title">What are<br>you building?</h2>
         <p class="lead">Tell us about your custom home, renovation, addition or commercial build-out.</p>
         <p class="subtle" id="quote-note">Demo form. Your entries stay on this page.</p>
       </div>
-      <form aria-describedby="quote-note">
+      <form id="quote-form" aria-describedby="quote-note">
         <div class="fields">
-          <label>Full name<input placeholder="Jane Smith" autocomplete="name" required></label>
-          <label>Email<input type="email" placeholder="jane@example.com" autocomplete="email" required></label>
-          <label>Phone<input type="tel" placeholder="(239) 555-0100" autocomplete="tel"></label>
-          <label>Project ZIP code<input inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" placeholder="33901" required></label>
+          <label>Full name<input placeholder="e.g. Jane Smith" autocomplete="name" required></label>
+          <label>Email<input type="email" placeholder="e.g. jane@example.com" autocomplete="email" required></label>
+          <label>Phone (optional)<input type="tel" placeholder="e.g. (239) 555-0100" autocomplete="tel"></label>
+          <label>Project ZIP code<input inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" title="Enter a 5-digit ZIP code" placeholder="e.g. 33901" required></label>
           <label>Project type<select required><option value="">Select a project type</option><option>Custom home</option><option>Renovation</option><option>Addition</option><option>Commercial build-out</option><option>Other</option></select></label>
-          <label>Estimated budget<select><option value="">Select a range</option><option>Under $100,000</option><option>$100,000–$249,999</option><option>$250,000–$499,999</option><option>$500,000 and up</option><option>Still deciding</option></select></label>
-          <label class="wide">Project details<textarea rows="3" placeholder="Share your scope, priorities and target start date."></textarea></label>
+          <label>Estimated budget (optional)<select><option value="">Select a range</option><option>Under $100,000</option><option>$100,000–$249,999</option><option>$250,000–$499,999</option><option>$500,000 and up</option><option>Still deciding</option></select></label>
+          <label class="wide">Project details (optional)<textarea rows="3" placeholder="Share your scope, priorities and target start date."></textarea></label>
         </div>
-        <button class="pill" type="button" id="preview-request">Preview request <svg class="icon" aria-hidden="true"><use href="#arrow"/></svg></button>
+        <button class="pill" type="submit" id="preview-request" disabled>Preview request <svg class="icon" aria-hidden="true"><use href="#arrow"/></svg></button>
         <p id="form-status" role="status"></p>
+        <noscript><p class="subtle">The preview requires JavaScript.</p></noscript>
       </form>
     </section>
   </main>
